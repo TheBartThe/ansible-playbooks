@@ -1,0 +1,63 @@
+Resources:
+  LaunchConfig1:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      AssociatePublicIpAddress: Yes
+      ImageId: ami-006a0174c6c25ac06
+      InstanceMonitoring: No
+      InstanceType: t2.micro
+      KeyName: CloudFormationKeyPair
+      LaunchConfigurationName: Test-LC
+      SecurityGroups:
+        - !Ref AllowSSH
+        - !Ref AllowHTTP
+
+  ASG1:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties: 
+      AutoScalingGroupName: Test-ASG
+      AvailabilityZones: 
+        - eu-west-2a
+        - eu-west-2b
+        - eu-west-2c
+      Cooldown: "60"
+      HealthCheckGracePeriod: 60
+      LaunchConfigurationName: !Ref LaunchConfig1
+      LoadBalancerNames: 
+        - !Ref LoadBalancer1
+      MaxSize: 2
+      MinSize: 1
+      TerminationPolicies: 
+        - OldesstLaunchConfiguration
+
+  LoadBalancer1:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties: 
+      Name: Test-LB
+      SecurityGroups: 
+        - !Ref AllowHTTP
+      Subnets: 
+        - subnet-0d84aa06c02652a17
+        - subnet-03a29922f816d5627
+        - subnet-0d85a598f901f6051
+      Type: application
+
+  AllowSSH:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH access
+      SecurityGroupIngress:
+        IpProtocol: tcp
+        FromPort: '22'
+        ToPort: '22'
+        CidrIp: 0.0.0.0/0
+
+  AllowHTTP:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable HTTP access
+      SecurityGroupIngress:
+        IpProtocol: tcp
+        FromPort: '80'
+        ToPort: '80'
+        CidrIp: 0.0.0.0/0
