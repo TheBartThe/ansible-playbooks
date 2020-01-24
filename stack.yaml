@@ -29,19 +29,25 @@ Resources:
       MinSize: 1
       TerminationPolicies: 
         - OldestLaunchConfiguration
+    DependsOn:
+      - LoadBalancer1
+      - LaunchConfig1
 
   LoadBalancer1:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
     Properties: 
-      Name: Test-LB
-      SecurityGroups: 
-        - !Ref AllowHTTP
+      LoadBalancerName: Test-LB
+      #      SecurityGroups: 
+      #  - !Ref AllowHTTP
+      Listeners:
+        - InstancePort: 80
+          Protocol: HTTP
+          LoadBalancerPort: 80
       Subnets: 
         - subnet-0d84aa06c02652a17
         - subnet-03a29922f816d5627
         - subnet-0d85a598f901f6051
-      Type: application
-
+      
   AllowSSH:
     Type: AWS::EC2::SecurityGroup
     Properties:
