@@ -28,7 +28,7 @@ Resources:
       MaxSize: 2
       MinSize: 1
       TerminationPolicies: 
-        - OldesstLaunchConfiguration
+        - OldestLaunchConfiguration
 
   LoadBalancer1:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
